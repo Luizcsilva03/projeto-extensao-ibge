@@ -1,0 +1,10 @@
+# Ignorar ambientes virtuais
+venv/
+env/
+
+# Ignorar arquivos de dados locais (opcional, mas boa prática)
+# data/*.csv
+
+# Ignorar arquivos temporários do Python
+__pycache__/
+*.pyc
