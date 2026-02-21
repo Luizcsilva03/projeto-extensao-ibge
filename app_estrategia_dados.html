@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estratégia de Vendas: Vila Maria e Vila Guilherme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        /* Custom scrollbar for detail panel */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 3px;
+        }
+        .canvas-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <!-- Chosen Palette: Navy Blue & Amber (Professional, Trust, Growth) -->
+    <!-- Application Structure Plan: The app is designed as an interactive Strategic Dashboard. Instead of a static document, it uses a 'Business Model Canvas' grid layout that users can explore interactively. 
+         1. Header: Sets the context (Vila Maria/Guilherme) and the core problem (Eliminating 'Achismo').
+         2. Interactive Canvas: A 3x3 grid where clicking a block reveals detailed strategies from the source report. This organizes the 9 segments logically.
+         3. Data Simulator: A 'Proof of Concept' section using Chart.js to visualize the 'Value Proposition' (Data vs. Guesswork), allowing users to see the simulated financial impact of using IBGE data.
+         4. Action Plan: A checklist derived from 'Key Activities' to guide implementation. -->
+    <!-- Visualization & Content Choices: 
+         1. Canvas Grid: Goal -> Organize; Method -> CSS Grid with JS interaction; Justification -> Breaks down complex strategy into digestible blocks.
+         2. Comparison Chart (Bar): Goal -> Compare; Method -> Chart.js; Justification -> Visually demonstrates the 'Cost Structure' vs 'Revenue Streams' impact mentioned in the report (Stock waste vs Sales).
+         3. Age Profile Chart (Doughnut): Goal -> Inform; Method -> Chart.js; Justification -> Simulates the 'Key Resource' (IBGE Data) to show users what they should be looking for (Age/Income).
+         4. Checklist: Goal -> Change; Method -> Interactive HTML list; Justification -> Turns 'Activities' into actionable steps.
+         NO SVG used. NO Mermaid JS used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Navigation / Header -->
+    <header class="bg-slate-900 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-amber-400 tracking-tight">Estratégia de Dados 📊</h1>
+                <p class="text-slate-400 text-sm mt-1">Vila Maria & Vila Guilherme | Microempreendedores</p>
+            </div>
+            <div class="mt-4 md:mt-0 bg-slate-800 py-2 px-4 rounded-full border border-slate-700">
+                <span class="text-xs font-semibold uppercase tracking-wider text-amber-500">Objetivo:</span>
+                <span class="text-sm font-medium ml-2">Eliminar o "Achismo" & Otimizar Vendas</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 space-y-12">
+
+        <!-- Intro Section -->
+        <section class="max-w-4xl mx-auto text-center space-y-4">
+            <h2 class="text-3xl font-bold text-slate-900">Do "Eu Acho" para o "Eu Sei"</h2>
+            <p class="text-lg text-slate-600 leading-relaxed">
+                Explore o modelo de negócio abaixo para descobrir como transformar dados do IBGE e planilhas simples em lucro real para o seu comércio na Zona Norte. Clique nos blocos para ver os detalhes.
+            </p>
+        </section>
+
+        <!-- Interactive Canvas Grid -->
+        <section id="canvas-section">
+            <div class="mb-6 flex items-center gap-2">
+                <div class="h-8 w-1 bg-amber-500 rounded-full"></div>
+                <h3 class="text-xl font-bold text-slate-800">O Canvas da Estratégia</h3>
+            </div>
+            
+            <!-- Grid Layout representing BMC -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 auto-rows-fr">
+                
+                <!-- KP: Key Partners (Tall Left) -->
+                <div onclick="updateDetail('parcerias')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-blue-500 shadow-sm transition md:row-span-2 hover:bg-blue-50">
+                    <div class="text-2xl mb-2">🤝</div>
+                    <h4 class="font-bold text-slate-900 mb-2">1. Parcerias Principais</h4>
+                    <p class="text-sm text-slate-500 line-clamp-3">Quem ajuda o negócio a rodar e fornece dados?</p>
+                </div>
+
+                <!-- KA: Key Activities (Top Mid-Left) -->
+                <div onclick="updateDetail('atividades')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-cyan-500 shadow-sm transition hover:bg-cyan-50">
+                    <div class="text-2xl mb-2">✅</div>
+                    <h4 class="font-bold text-slate-900 mb-2">2. Atividades Principais</h4>
+                    <p class="text-sm text-slate-500 line-clamp-3">O que fazer diariamente com os dados?</p>
+                </div>
+
+                <!-- VP: Value Proposition (Center Tall) -->
+                <div onclick="updateDetail('valor')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-amber-500 shadow-sm transition md:row-span-2 hover:bg-amber-50 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 opacity-10 text-9xl">💎</div>
+                    <div class="text-2xl mb-2 relative z-10">💎</div>
+                    <h4 class="font-bold text-slate-900 mb-2 relative z-10">4. Proposta de Valor</h4>
+                    <p class="text-sm text-slate-500 relative z-10">Por que usar dados muda o jogo?</p>
+                </div>
+
+                <!-- CR: Customer Relationships (Top Mid-Right) -->
+                <div onclick="updateDetail('relacionamento')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-purple-500 shadow-sm transition hover:bg-purple-50">
+                    <div class="text-2xl mb-2">❤️</div>
+                    <h4 class="font-bold text-slate-900 mb-2">5. Relacionamento</h4>
+                    <p class="text-sm text-slate-500 line-clamp-3">Como falar com o cliente da Vila Maria?</p>
+                </div>
+
+                <!-- CS: Customer Segments (Tall Right) -->
+                <div onclick="updateDetail('segmentos')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-green-500 shadow-sm transition md:row-span-2 hover:bg-green-50">
+                    <div class="text-2xl mb-2">👥</div>
+                    <h4 class="font-bold text-slate-900 mb-2">7. Segmentos de Clientes</h4>
+                    <p class="text-sm text-slate-500 line-clamp-3">Quem são seus vizinhos e trabalhadores?</p>
+                </div>
+
+                <!-- KR: Key Resources (Bottom Mid-Left) -->
+                <div onclick="updateDetail('recursos')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-indigo-500 shadow-sm transition hover:bg-indigo-50">
+                    <div class="text-2xl mb-2">🛠️</div>
+                    <h4 class="font-bold text-slate-900 mb-2">3. Recursos Principais</h4>
+                    <p class="text-sm text-slate-500 line-clamp-3">Ferramentas necessárias para análise.</p>
+                </div>
+
+                <!-- CH: Channels (Bottom Mid-Right) -->
+                <div onclick="updateDetail('canais')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-pink-500 shadow-sm transition hover:bg-pink-50">
+                    <div class="text-2xl mb-2">📢</div>
+                    <h4 class="font-bold text-slate-900 mb-2">6. Canais</h4>
+                    <p class="text-sm text-slate-500 line-clamp-3">Onde encontrar o seu cliente?</p>
+                </div>
+
+                <!-- C$: Cost Structure (Bottom Left Wide) -->
+                <div onclick="updateDetail('custos')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-red-500 shadow-sm transition md:col-span-2 lg:col-span-2 hover:bg-red-50">
+                    <div class="text-2xl mb-2">📉</div>
+                    <h4 class="font-bold text-slate-900 mb-2">8. Estrutura de Custos</h4>
+                    <p class="text-sm text-slate-500">Onde economizamos dinheiro usando dados?</p>
+                </div>
+
+                <!-- R$: Revenue Streams (Bottom Right Wide) -->
+                <div onclick="updateDetail('receitas')" class="canvas-block cursor-pointer bg-white p-6 rounded-lg border-l-4 border-emerald-500 shadow-sm transition md:col-span-2 lg:col-span-3 hover:bg-emerald-50">
+                    <div class="text-2xl mb-2">💰</div>
+                    <h4 class="font-bold text-slate-900 mb-2">9. Fontes de Receita</h4>
+                    <p class="text-sm text-slate-500">Como os dados aumentam o faturamento?</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Dynamic Detail Panel -->
+        <section id="detail-panel" class="hidden bg-slate-100 rounded-xl p-8 border border-slate-200 shadow-inner scroll-mt-24 transition-all duration-500">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/3">
+                    <h3 id="detail-title" class="text-3xl font-bold text-slate-800 mb-4">Título do Bloco</h3>
+                    <div id="detail-icon" class="text-6xl mb-4">📊</div>
+                    <p id="detail-desc" class="text-slate-600 italic mb-4">Descrição breve do bloco selecionado.</p>
+                    <button onclick="scrollToSimulator()" class="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition w-full md:w-auto">
+                        Ver Simulação Prática
+                    </button>
+                </div>
+                <div class="md:w-2/3 bg-white rounded-lg p-6 shadow-sm">
+                    <h4 class="text-sm font-bold uppercase text-slate-400 mb-4 tracking-wider">Pontos Chave do Relatório</h4>
+                    <ul id="detail-list" class="space-y-3">
+                        <!-- Javascript will populate this -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulator Section -->
+        <section id="simulator" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-slate-900 p-6 text-white">
+                <h3 class="text-2xl font-bold flex items-center gap-2">
+                    <span>🚀</span> Simulador de Impacto
+                </h3>
+                <p class="text-slate-400">Veja a diferença entre gerir com "Achismo" vs. "Dados do IBGE".</p>
+            </div>
+            
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    
+                    <!-- Simulation Controls & Context -->
+                    <div class="space-y-6">
+                        <div class="bg-amber-50 border border-amber-100 rounded-lg p-5">
+                            <h4 class="font-bold text-amber-900 mb-2">Cenário: Vila Maria</h4>
+                            <p class="text-sm text-amber-800 mb-4">
+                                Imagine que o IBGE mostra que <strong>40%</strong> do bairro é idoso (+60), mas sua loja foca em moda jovem.
+                            </p>
+                            
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Nível de Uso de Dados:</label>
+                            <input type="range" id="dataUsageSlider" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                            <div class="flex justify-between text-xs text-slate-500 mt-1">
+                                <span>100% Achismo</span>
+                                <span>50% Misto</span>
+                                <span>100% Orientado a Dados</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-slate-800">Resultados Projetados:</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                                    <span class="block text-xs text-slate-500 uppercase">Produtos Encalhados</span>
+                                    <span id="stat-waste" class="text-2xl font-bold text-red-500">R$ 2.000</span>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded border border-slate-200 text-center">
+                                    <span class="block text-xs text-slate-500 uppercase">Eficiência de Vendas</span>
+                                    <span id="stat-efficiency" class="text-2xl font-bold text-emerald-600">50%</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500 italic">
+                                * Valores estimados para fins didáticos baseados na "Estrutura de Custos" do relatório.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Area -->
+                    <div class="flex flex-col gap-8">
+                        <!-- Chart 1: Comparison -->
+                        <div>
+                            <h5 class="text-sm font-bold text-slate-600 mb-2 text-center">Impacto no Lucro Mensal</h5>
+                            <div class="chart-container">
+                                <canvas id="profitChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Plan / Checklist -->
+        <section class="max-w-4xl mx-auto">
+             <div class="mb-6 flex items-center gap-2">
+                <div class="h-8 w-1 bg-green-500 rounded-full"></div>
+                <h3 class="text-xl font-bold text-slate-800">Checklist de Implementação</h3>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                <div id="checklist-container" class="divide-y divide-slate-100">
+                    <!-- Javascript will populate this -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">Baseado no Relatório "Trabalho de Extensão - Análise de Dados"</p>
+            <p class="text-sm opacity-50">Ferramenta Educacional Interativa • Sem SVG • Canvas + Tailwind</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // --- DATA STORE ---
+        // Content from the Source Report mapped to Canvas Blocks
+        const canvasData = {
+            parcerias: {
+                title: "1. Parcerias Principais",
+                icon: "🤝",
+                desc: "Alianças externas que fornecem dados e fluxo de clientes.",
+                points: [
+                    "<strong>IBGE (Cidades):</strong> Fonte gratuita e fidedigno para dados demográficos (idade, renda).",
+                    "<strong>Ecossistema Local:</strong> Empresas de logística e transportadoras da Vila Maria/Guilherme.",
+                    "<strong>Associações:</strong> Líderes de bairro para validação de tendências."
+                ]
+            },
+            atividades: {
+                title: "2. Atividades Principais",
+                icon: "✅",
+                desc: "Ações diárias para transformar dados em decisões.",
+                points: [
+                    "<strong>Consulta Externa:</strong> Acessar portal IBGE Cidades regularmente.",
+                    "<strong>Registro Interno:</strong> Anotar vendas diárias e horários de pico.",
+                    "<strong>Cruzamento:</strong> Comparar perfil do bairro com produtos da loja.",
+                    "<strong>Decisão:</strong> Ajustar preços e criar promoções baseadas em evidências."
+                ]
+            },
+            recursos: {
+                title: "3. Recursos Principais",
+                icon: "🛠️",
+                desc: "O que você precisa para executar a estratégia.",
+                points: [
+                    "<strong>Tecnológicos:</strong> Internet, Portal IBGE, Excel/Google Sheets.",
+                    "<strong>Intelectuais:</strong> Capacidade de interpretar gráficos (Pirâmides Etárias).",
+                    "<strong>Físicos:</strong> Estoque otimizado (sem produtos parados)."
+                ]
+            },
+            valor: {
+                title: "4. Proposta de Valor",
+                icon: "💎",
+                desc: "O diferencial competitivo gerado pelos dados.",
+                points: [
+                    "<strong>Fim do Achismo:</strong> Decisões baseadas na realidade do cliente local.",
+                    "<strong>Oferta Alinhada:</strong> Produto certo (Premium vs Popular) para a renda certa.",
+                    "<strong>Eficiência:</strong> Redução de dinheiro parado em estoque inútil.",
+                    "<strong>Agilidade:</strong> Reação rápida às mudanças do bairro."
+                ]
+            },
+            relacionamento: {
+                title: "5. Relacionamento",
+                icon: "❤️",
+                desc: "Como interagir com o público mapeado.",
+                points: [
+                    "<strong>Comunicação Direcionada:</strong> Falar a linguagem da faixa etária predominante.",
+                    "<strong>Ações Estratégicas:</strong> Promoções de 'Happy Hour' nos horários de saída das transportadoras.",
+                    "<strong>Feedback:</strong> Validar se o cliente sente que a loja 'entende' o bairro."
+                ]
+            },
+            canais: {
+                title: "6. Canais",
+                icon: "📢",
+                desc: "Meios para entregar valor e vender.",
+                points: [
+                    "<strong>Loja Física:</strong> Layout otimizado conforme o perfil do bairro.",
+                    "<strong>Redes Sociais:</strong> Tráfego pago segmentado geograficamente e por idade (dados IBGE).",
+                    "<strong>WhatsApp:</strong> Comunicação direta com clientes recorrentes."
+                ]
+            },
+            segmentos: {
+                title: "7. Segmentos de Clientes",
+                icon: "👥",
+                desc: "Quem realmente compra na Vila Maria/Guilherme.",
+                points: [
+                    "<strong>Moradores:</strong> Divididos por Pirâmide Etária (Jovens vs Idosos).",
+                    "<strong>Trabalhadores:</strong> Funcionários do polo logístico (horários específicos).",
+                    "<strong>Perfil de Renda:</strong> Capacidade de compra baseada no Rendimento Nominal."
+                ]
+            },
+            custos: {
+                title: "8. Estrutura de Custos",
+                icon: "📉",
+                desc: "Otimização financeira através da inteligência.",
+                points: [
+                    "<strong>Menor Desperdício:</strong> Redução de custos com produtos encalhados.",
+                    "<strong>Marketing Inteligente:</strong> Gasto eficiente em anúncios direcionados.",
+                    "<strong>Implementação Zero:</strong> Uso de ferramentas gratuitas (IBGE)."
+                ]
+            },
+            receitas: {
+                title: "9. Fontes de Receita",
+                icon: "💰",
+                desc: "Como o dinheiro entra de forma otimizada.",
+                points: [
+                    "<strong>Aumento de Faturamento:</strong> Preços adequados ao bolso do morador.",
+                    "<strong>Picos de Venda:</strong> Receita extra nos horários de fluxo logístico.",
+                    "<strong>Giro de Estoque:</strong> Transformação rápida de produtos em caixa."
+                ]
+            }
+        };
+
+        const checklistItems = [
+            { text: "Acessar cidades.ibge.gov.br e buscar 'Vila Maria'", done: false },
+            { text: "Identificar a Pirâmide Etária predominante", done: false },
+            { text: "Verificar Rendimento Nominal Médio da região", done: false },
+            { text: "Criar planilha simples de vendas diárias", done: false },
+            { text: "Comparar horário de vendas com saída das empresas locais", done: false },
+            { text: "Ajustar vitrine para o público identificado", done: false }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let currentDetail = null;
+        let profitChartInstance = null;
+
+        // --- DOM ELEMENTS ---
+        const detailPanel = document.getElementById('detail-panel');
+        const detailTitle = document.getElementById('detail-title');
+        const detailIcon = document.getElementById('detail-icon');
+        const detailDesc = document.getElementById('detail-desc');
+        const detailList = document.getElementById('detail-list');
+        const checklistContainer = document.getElementById('checklist-container');
+        const slider = document.getElementById('dataUsageSlider');
+        const statWaste = document.getElementById('stat-waste');
+        const statEfficiency = document.getElementById('stat-efficiency');
+
+        // --- FUNCTIONS ---
+
+        function updateDetail(key) {
+            const data = canvasData[key];
+            if (!data) return;
+
+            // Update Content
+            detailTitle.innerText = data.title;
+            detailIcon.innerText = data.icon;
+            detailDesc.innerText = data.desc;
+            
+            // Build List
+            detailList.innerHTML = data.points.map(point => 
+                `<li class="flex items-start gap-3 p-2 rounded hover:bg-slate-50 transition">
+                    <span class="text-amber-500 mt-1">➤</span>
+                    <span class="text-slate-700 text-sm leading-relaxed">${point}</span>
+                </li>`
+            ).join('');
+
+            // Show Panel with Animation
+            detailPanel.classList.remove('hidden');
+            detailPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Highlight active block (simple border change logic could go here)
+        }
+
+        function scrollToSimulator() {
+            document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderChecklist() {
+            checklistContainer.innerHTML = checklistItems.map((item, index) => `
+                <div class="p-4 flex items-center gap-4 hover:bg-slate-50 transition cursor-pointer" onclick="toggleCheck(${index})">
+                    <div class="w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${item.done ? 'bg-green-500 border-green-500' : 'border-slate-300'}">
+                        ${item.done ? '<span class="text-white text-sm">✓</span>' : ''}
+                    </div>
+                    <span class="${item.done ? 'text-slate-400 line-through' : 'text-slate-700 font-medium'}">${item.text}</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleCheck(index) {
+            checklistItems[index].done = !checklistItems[index].done;
+            renderChecklist();
+        }
+
+        // --- CHARTS LOGIC (CHART.JS) ---
+
+        function initCharts() {
+            const ctxProfit = document.getElementById('profitChart').getContext('2d');
+
+            // Chart 1: Profit Projection
+            profitChartInstance = new Chart(ctxProfit, {
+                type: 'line',
+                data: {
+                    labels: ['Mês 1', 'Mês 2', 'Mês 3', 'Mês 4', 'Mês 5', 'Mês 6'],
+                    datasets: [
+                        {
+                            label: 'Com Estratégia de Dados',
+                            data: [5000, 6000, 7500, 8200, 9500, 11000],
+                            borderColor: '#10b981', // Emerald 500
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Gestão por "Achismo"',
+                            data: [5000, 5200, 4800, 5100, 4900, 5300],
+                            borderColor: '#ef4444', // Red 500
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: false, title: { display: true, text: 'Lucro (R$)' } }
+                    }
+                }
+            });
+        }
+
+        function updateSimulation() {
+            const val = parseInt(slider.value);
+            
+            // Calculate Simulation Logic
+            // As usage goes up, Waste goes down, Efficiency goes up
+            const maxWaste = 4000;
+            const minWaste = 500;
+            const currentWaste = maxWaste - ((maxWaste - minWaste) * (val / 100));
+            
+            const minEff = 30;
+            const maxEff = 95;
+            const currentEff = minEff + ((maxEff - minEff) * (val / 100));
+
+            // Update Text Stats
+            statWaste.innerText = `R$ ${Math.round(currentWaste).toLocaleString('pt-BR')}`;
+            statWaste.style.color = val > 70 ? '#10b981' : '#ef4444'; // Green if low waste
+            
+            statEfficiency.innerText = `${Math.round(currentEff)}%`;
+
+            // Update Chart Data dynamically
+            // We'll modulate the "Com Estratégia" line based on the slider
+            const baseGrowth = [5000, 6000, 7500, 8200, 9500, 11000];
+            const impactedGrowth = baseGrowth.map((v, i) => {
+                // If slider is 0, it matches the "Achismo" line roughly. If 100, it matches full potential.
+                const achismoVal = profitChartInstance.data.datasets[1].data[i];
+                const diff = v - achismoVal;
+                return achismoVal + (diff * (val / 100));
+            });
+
+            profitChartInstance.data.datasets[0].data = impactedGrowth;
+            profitChartInstance.update();
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChecklist();
+            initCharts();
+            
+            // Event Listeners
+            slider.addEventListener('input', updateSimulation);
+            
+            // Initial Simulation Update
+            updateSimulation();
+        });
+
+    </script>
+</body>
+</html>
